@@ -9,7 +9,7 @@ export default async function handler(req, res) {
       "Content-Type": "application/json",
       // La clave viene de variable de entorno, nunca del navegador
       "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
-      "X-Title": "SeniorCare AI"
+      "X-Title": "Salud Mayor AI"
     },
     body: JSON.stringify({
       model: "deepseek/deepseek-chat",
