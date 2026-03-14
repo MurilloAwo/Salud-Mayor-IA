@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Salud Mayor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header>
+    <div class="header-content">
+      <img src="https://cdn-icons-png.flaticon.com/512/3774/3774299.png" class="logo" alt="logo SeniorCare">
+      <div>
+        <h1 data-i18n="titulo">Salud Mayor</h1>
+        <p data-i18n="subtitulo">Evaluación inteligente del bienestar en adultos mayores</p>
+      </div>
+    </div>
+    <div class="header-controls">
+      <div class="idioma-buttons">
+        <button onclick="setSpanish()">🇨🇴 <span data-i18n="espanol">Español</span></button>
+        <button onclick="setEnglish()">🇺🇸 <span data-i18n="ingles">English</span></button>
+      </div>
+      <button onclick="toggleAccessible()" class="btn-acceso" data-i18n="accessibility">♿ Modo Accesible</button>
+    </div>
+  </header>
+
+  <!-- ===== BARRA DE PROGRESO ===== -->
+  <div class="progress-section">
+    <h3 data-i18n="progreso_sesion">Progreso de la sesión</h3>
+    <div class="progress-grid">
+      <div class="progress-item" id="prog-memoria">🧠 <span data-i18n="memoria_prog">Memoria</span></div>
+      <div class="progress-item" id="prog-tug">🚶 <span data-i18n="tug_prog">TUG</span></div>
+      <div class="progress-item" id="prog-gds">💭 <span data-i18n="gds_prog">GDS-5</span></div>
+      <div class="progress-item" id="prog-orientacion">🧭 <span data-i18n="orientacion_prog">Orientación</span></div>
+      <div class="progress-item" id="prog-barthel">🏠 <span data-i18n="barthel_prog">Barthel</span></div>
+      <div class="progress-item" id="prog-fluencia">🗣️ <span data-i18n="fluencia_prog">Fluidez</span></div>
+      <div class="progress-item" id="prog-espacio">🗺️ <span data-i18n="espacio_prog">Espacio Vital</span></div>
+    </div>
+  </div>
+
+  <!-- ===== TARJETAS ===== -->
+  <div class="container">
+
+    <!-- 1. MEMORIA (con recall diferido) -->
+    <div class="card" id="card-memoria">
+      <div class="card-header">
+        <div class="card-icon">🧠</div>
+        <h2 data-i18n="memoria_titulo">Test de Memoria</h2>
+        <button class="btn-voz" onclick="leerTarjeta('memoria_titulo', 'memoria_desc', 'palabras')" title="Leer en voz alta">🔊</button>
+      </div>
+
+      <!-- Fase 1: Mostrar palabras -->
+      <div id="memoria-fase1">
+        <p data-i18n="memoria_desc">Observe y memorice estas palabras durante 30 segundos:</p>
+        <div class="palabras-display">
+          <span id="palabrasMostrar" data-i18n="palabras">Manzana · Casa · Libro</span>
+        </div>
+        <div class="timer-mini" id="memoriaCountdown">30</div>
+        <button onclick="iniciarMemoria()" id="btnIniciarMemoria" data-i18n="iniciar_memoria">▶ Iniciar</button>
+      </div>
+
+      <!-- Fase 2: Esperar (hacer otros tests) -->
+      <div id="memoria-fase2" class="hidden">
+        <div class="alerta-espera">
+          <span>⏳</span>
+          <p data-i18n="memoria_espera">¡Bien! Realiza los otros tests y regresa aquí para recordar las palabras.</p>
+        </div>
+        <button onclick="activarRecall()" data-i18n="ya_listo">✅ Ya terminé otros tests</button>
+      </div>
+
+      <!-- Fase 3: Recordar palabras -->
+      <div id="memoria-fase3" class="hidden">
+        <p data-i18n="memoria_recall">¿Cuáles eran las 3 palabras que memorizaste?</p>
+        <input type="text" id="respuestaMemoria" data-i18n-placeholder="placeholder_memoria" placeholder="Escriba las palabras">
+        <button onclick="evaluarMemoria()" data-i18n="enviar">Enviar</button>
+        <p data-i18n="subir_foto" style="font-size:0.85rem;">O sube una foto de tu respuesta escrita:</p>
+        <input type="file" id="imagenMemoria" accept="image/*">
+        <button onclick="leerImagen()" data-i18n="leer_texto" class="btn-secundario">📷 Leer texto de la imagen</button>
+      </div>
+    </div>
+
+    <!-- 2. TUG — Timed Up and Go -->
+    <div class="card" id="card-tug">
+      <div class="card-header">
+        <div class="card-icon">🚶</div>
+        <h2 data-i18n="tug_titulo">Test TUG</h2>
+        <button class="btn-voz" onclick="leerTarjeta('tug_titulo', 'tug_desc')" title="Leer en voz alta">🔊</button>
+      </div>
+      <p data-i18n="tug_desc">Timed Up and Go: mide equilibrio y riesgo de caídas</p>
+      <div class="instrucciones-box">
+        <ol>
+          <li data-i18n="tug_paso1">Siéntese en una silla con apoyabrazos</li>
+          <li data-i18n="tug_paso2">Al pulsar INICIAR: levántese y camine 3 metros</li>
+          <li data-i18n="tug_paso3">Gire, regrese y siéntese nuevamente</li>
+          <li data-i18n="tug_paso4">Pulse DETENER cuando esté sentado</li>
+        </ol>
+      </div>
+      <div class="timer-tug" id="tugTimer">0.0 s</div>
+      <div class="btn-row">
+        <button onclick="iniciarTUG()" id="btnIniciarTUG" data-i18n="iniciar">▶ Iniciar</button>
+        <button onclick="detenerTUG()" id="btnDetenerTUG" disabled data-i18n="detener">⏹ Detener</button>
+      </div>
+      <div id="tugReferencia" class="referencia-box hidden">
+        🟢 &lt;10s = Normal &nbsp;|&nbsp; 🟡 10–19s = Precaución &nbsp;|&nbsp; 🔴 ≥20s = Riesgo
+      </div>
+    </div>
+
+    <!-- 3. GDS-5 — Escala de Depresión Geriátrica -->
+    <div class="card" id="card-gds">
+      <div class="card-header">
+        <div class="card-icon">💭</div>
+        <h2 data-i18n="gds_titulo_full">Estado Emocional (GDS-5)</h2>
+        <button class="btn-voz" onclick="leerTarjeta('gds_titulo_full', 'gds_desc')" title="Leer en voz alta">🔊</button>
+      </div>
+      <p data-i18n="gds_desc">Escala de Depresión Geriátrica validada — 5 preguntas</p>
+
+      <div class="gds-item">
+        <p data-i18n="gds_p1">¿Está satisfecho/a con su vida?</p>
+        <div class="radio-group">
+          <label><input type="radio" name="gds1" value="0"> <span data-i18n="si">Sí</span></label>
+          <label><input type="radio" name="gds1" value="1"> <span data-i18n="no">No</span></label>
+        </div>
+      </div>
+      <div class="gds-item">
+        <p data-i18n="gds_p2">¿Ha abandonado muchas de sus actividades e intereses?</p>
+        <div class="radio-group">
+          <label><input type="radio" name="gds2" value="1"> <span data-i18n="si">Sí</span></label>
+          <label><input type="radio" name="gds2" value="0"> <span data-i18n="no">No</span></label>
+        </div>
+      </div>
+      <div class="gds-item">
+        <p data-i18n="gds_p3">¿Siente que su vida está vacía?</p>
+        <div class="radio-group">
+          <label><input type="radio" name="gds3" value="1"> <span data-i18n="si">Sí</span></label>
+          <label><input type="radio" name="gds3" value="0"> <span data-i18n="no">No</span></label>
+        </div>
+      </div>
+      <div class="gds-item">
+        <p data-i18n="gds_p4">¿Se aburre con frecuencia?</p>
+        <div class="radio-group">
+          <label><input type="radio" name="gds4" value="1"> <span data-i18n="si">Sí</span></label>
+          <label><input type="radio" name="gds4" value="0"> <span data-i18n="no">No</span></label>
+        </div>
+      </div>
+      <div class="gds-item">
+        <p data-i18n="gds_p5">¿Está de buen humor la mayor parte del tiempo?</p>
+        <div class="radio-group">
+          <label><input type="radio" name="gds5" value="0"> <span data-i18n="si">Sí</span></label>
+          <label><input type="radio" name="gds5" value="1"> <span data-i18n="no">No</span></label>
+        </div>
+      </div>
+
+      <button onclick="evaluarGDS()" data-i18n="evaluar">Evaluar</button>
+    </div>
+
+    <!-- 4. ORIENTACIÓN -->
+    <div class="card" id="card-orientacion">
+      <div class="card-header">
+        <div class="card-icon">🧭</div>
+        <h2 data-i18n="orientacion_titulo">Test de Orientación</h2>
+        <button class="btn-voz" onclick="leerTarjeta('orientacion_titulo', 'orientacion_desc')" title="Leer en voz alta">🔊</button>
+      </div>
+      <p data-i18n="orientacion_desc">Evalúa el conocimiento del tiempo y lugar</p>
+
+      <label data-i18n="anio_actual">¿En qué año estamos?</label>
+      <input type="number" id="orientAnio" placeholder="Ej: 2026" min="2000" max="2100">
+
+      <label data-i18n="dia_semana">¿Qué día de la semana es hoy?</label>
+      <select id="orientDia">
+        <option value="lunes"   data-i18n="lunes">Lunes</option>
+        <option value="martes"  data-i18n="martes">Martes</option>
+        <option value="miercoles" data-i18n="miercoles">Miércoles</option>
+        <option value="jueves"  data-i18n="jueves">Jueves</option>
+        <option value="viernes" data-i18n="viernes">Viernes</option>
+        <option value="sabado"  data-i18n="sabado">Sábado</option>
+        <option value="domingo" data-i18n="domingo">Domingo</option>
+      </select>
+
+      <label data-i18n="ciudad_vida">¿En qué ciudad vive usted?</label>
+      <input type="text" id="orientCiudad" data-i18n-placeholder="placeholder_ciudad" placeholder="Escriba su ciudad">
+
+      <button onclick="evaluarOrientacion()" data-i18n="evaluar">Evaluar</button>
+    </div>
+
+    <!-- 5. BARTHEL SIMPLIFICADO -->
+    <div class="card" id="card-barthel">
+      <div class="card-header">
+        <div class="card-icon">🏠</div>
+        <h2 data-i18n="barthel_titulo">Capacidad Funcional (Barthel)</h2>
+        <button class="btn-voz" onclick="leerTarjeta('barthel_titulo', 'barthel_desc')" title="Leer en voz alta">🔊</button>
+      </div>
+      <p data-i18n="barthel_desc">Evalúa su independencia en actividades diarias básicas</p>
+
+      <label data-i18n="barthel_alimentacion">Alimentación</label>
+      <select id="b_alimentacion">
+        <option value="2" data-i18n="b_independiente">Independiente</option>
+        <option value="1" data-i18n="b_con_ayuda">Con ayuda</option>
+        <option value="0" data-i18n="b_dependiente">Dependiente</option>
+      </select>
+
+      <label data-i18n="barthel_bano">Baño / Higiene personal</label>
+      <select id="b_bano">
+        <option value="1" data-i18n="b_independiente">Independiente</option>
+        <option value="0" data-i18n="b_dependiente">Dependiente</option>
+      </select>
+
+      <label data-i18n="barthel_vestido">Vestido</label>
+      <select id="b_vestido">
+        <option value="2" data-i18n="b_independiente">Independiente</option>
+        <option value="1" data-i18n="b_con_ayuda">Con ayuda</option>
+        <option value="0" data-i18n="b_dependiente">Dependiente</option>
+      </select>
+
+      <label data-i18n="barthel_traslado">Traslado (silla–cama)</label>
+      <select id="b_traslado">
+        <option value="3" data-i18n="b_independiente">Independiente</option>
+        <option value="2" data-i18n="b_supervision">Supervisión</option>
+        <option value="1" data-i18n="b_gran_ayuda">Gran ayuda</option>
+        <option value="0" data-i18n="b_dependiente">Dependiente</option>
+      </select>
+
+      <label data-i18n="barthel_escaleras">Subir escaleras</label>
+      <select id="b_escaleras">
+        <option value="2" data-i18n="b_independiente">Independiente</option>
+        <option value="1" data-i18n="b_con_ayuda">Con ayuda</option>
+        <option value="0" data-i18n="b_dependiente">Dependiente</option>
+      </select>
+
+      <button onclick="evaluarBarthel()" data-i18n="evaluar">Evaluar</button>
+    </div>
+
+    <!-- 6. FLUIDEZ VERBAL -->
+    <div class="card" id="card-fluencia">
+      <div class="card-header">
+        <div class="card-icon">🗣️</div>
+        <h2 data-i18n="fluencia_titulo">Fluidez Verbal</h2>
+        <button class="btn-voz" onclick="leerTarjeta('fluencia_titulo', 'fluencia_desc')" title="Leer en voz alta">🔊</button>
+      </div>
+      <p data-i18n="fluencia_desc">Escriba todos los animales que recuerde en 60 segundos.</p>
+      <div class="timer-fluencia" id="fluenciaTimer">60</div>
+      <textarea id="fluenciaInput" data-i18n-placeholder="fluencia_placeholder"
+        placeholder="Escriba aquí los animales separados por coma o espacio..." rows="4" disabled></textarea>
+      <button onclick="iniciarFluencia()" id="btnIniciarFluencia" data-i18n="iniciar">▶ Iniciar</button>
+    </div>
+
+    <!-- 7. ESPACIO VITAL -->
+    <div class="card" id="card-espacio">
+      <div class="card-header">
+        <div class="card-icon">🗺️</div>
+        <h2 data-i18n="espacio_titulo">Espacio Vital</h2>
+        <button class="btn-voz" onclick="leerTarjeta('espacio_titulo', 'espacio_desc')" title="Leer en voz alta">🔊</button>
+      </div>
+      <p data-i18n="espacio_desc">Seleccione el mayor alcance de su movilidad en el último mes:</p>
+      <div class="espacio-options">
+        <div class="espacio-card" onclick="seleccionarEspacio(1, this)">
+          <span class="espacio-icon">🛏️</span>
+          <span data-i18n="habitacion">Habitación</span>
+        </div>
+        <div class="espacio-card" onclick="seleccionarEspacio(2, this)">
+          <span class="espacio-icon">🏠</span>
+          <span data-i18n="casa">Casa</span>
+        </div>
+        <div class="espacio-card" onclick="seleccionarEspacio(3, this)">
+          <span class="espacio-icon">🏘️</span>
+          <span data-i18n="barrio">Barrio</span>
+        </div>
+        <div class="espacio-card" onclick="seleccionarEspacio(4, this)">
+          <span class="espacio-icon">🌆</span>
+          <span data-i18n="ciudad">Ciudad</span>
+        </div>
+      </div>
+      <input type="hidden" id="espacio" value="1">
+      <button onclick="guardarEspacio()" data-i18n="guardar">Guardar</button>
+    </div>
+
+  </div><!-- /container -->
+
+  <!-- ===== RESULTADO ===== -->
+  <div class="resultado-section">
+    <h2 data-i18n="resultado">Resultado</h2>
+    <div id="resultado" class="resultado-box"></div>
+  </div>
+
+  <!-- ===== RESUMEN DE SESIÓN ===== -->
+  <div class="resumen-section" id="resumenSection" style="display:none">
+    <h2 data-i18n="resumen_sesion">Resumen de Sesión</h2>
+    <div id="resumenContenido"></div>
+  </div>
+
+  <!-- ===== EVOLUCIÓN / GRÁFICO ===== -->
+  <div class="evolucion-section">
+    <h2 data-i18n="evolucion">Evolución</h2>
+    <div class="grafico-controls">
+      <label for="tipoGrafico" data-i18n="mostrar">Mostrar:</label>
+      <select id="tipoGrafico" onchange="cambiarTipoGrafico()">
+        <option value="todos"       data-i18n="todos">Todos</option>
+        <option value="memoria"     data-i18n="memoria_prog">Memoria</option>
+        <option value="tug"         data-i18n="tug_prog">TUG</option>
+        <option value="gds"         data-i18n="gds_prog">GDS-5</option>
+        <option value="orientacion" data-i18n="orientacion_prog">Orientación</option>
+        <option value="barthel"     data-i18n="barthel_prog">Barthel</option>
+        <option value="fluencia"    data-i18n="fluencia_prog">Fluidez</option>
+        <option value="espacio"     data-i18n="espacio_prog">Espacio Vital</option>
+      </select>
+    </div>
+    <canvas id="chart"></canvas>
+  </div>
+
+  <!-- ===== ACCIONES ===== -->
+  <div class="acciones">
+    <button onclick="generarResumen()" class="btn-resumen" data-i18n="ver_resumen">📋 Ver Resumen</button>
+    <button onclick="analizarIA()" class="aiButton" data-i18n="analizar_ia">🤖 Analizar con IA</button>
+    <button onclick="borrarDatos()" class="btn-peligro" data-i18n="borrar">🗑️ Borrar datos</button>
+  </div>
+
+  <div class="control-voz">
+    <label>
+      <input type="checkbox" id="vozActiva" checked>
+      <span data-i18n="activar_voz">Activar voz al analizar</span>
+    </label>
+    <button id="btnDetenerVoz" onclick="stopVoice()" class="btn-stop-voz" data-i18n="detener_voz">⏹ Detener voz</button>
+  </div>
+
+  <footer>
+    <p data-i18n="footer_nota">⚠️ Esta herramienta es de seguimiento, no reemplaza diagnóstico médico profesional.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
