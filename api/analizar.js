@@ -8,6 +8,7 @@ export default async function handler(req, res) {
   }
 
   const { resumen, idioma } = req.body;
+  console.log("KEY existe:", !!process.env.OPENROUTER_API_KEY);
 
   if (!resumen) {
     return res.status(400).json({ error: "Missing 'resumen' in body" });
