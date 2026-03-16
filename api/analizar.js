@@ -65,7 +65,7 @@ Tone: clear, compassionate, jargon-free. Be concise. Respond in English.`;
         "X-Title": "Salud Mayor AI"
       },
       body: JSON.stringify({
-        model: "deepseek/deepseek-chat",
+        model: "openai/gpt-3.5-turbo",
         messages: [
           { role: "system", content: sistemaPrompt },
           { role: "user",   content: userMsg }
